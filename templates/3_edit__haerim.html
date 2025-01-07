@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>편집</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='story_generation2.css') }}" />
+    <style>
+        /* 제목 입력 팝업 스타일 */
+        #titleInputPopup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #popupContent {
+            background-color: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 320px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        #popupContent h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        #popupContent input {
+            width: 90%;
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        #popupContent input:focus {
+            outline: none;
+            border-color: #3c67ef;
+            box-shadow: 0 0 4px rgba(60, 103, 239, 0.4);
+        }
+
+        #popupContent button {
+            width: 90%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-left: 13px;
+            font-size: 14px;
+            color: white;
+            background-color: #3c67ef;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #popupContent button:hover {
+            background-color: #2a56d8;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 편집 화면 -->
+    <div id="editScreen" class="screen active">
+        <div class="container">
+            <button class="close-button" onclick="closeEdit()" style="top: 0; left: 0; position: absolute;">
+                <img src="{{ url_for('static', filename='assets/close.svg') }}" alt="닫기" class="close-icon">
+            </button>
+            <div class="edit-container">
+                <h2 class="edit-title">제가 제대로 이야기를 들었는지 확인해주세요</h2>
+                <div class="edit-content">
+                    <div class="text-content" id="recognizedText" contenteditable="false"></div>
+                    <button class="edit-button" id="editButton">
+                        <img src="{{ url_for('static', filename='assets/edit.svg') }}" alt="편집">
+                    </button>
+                    <button class="edit-button" id="disableEditButton" style="display: none;">
+                        <img src="{{ url_for('static', filename='assets/check_icon2_2.png') }}" alt="확인">
+                    </button>
+                </div>
+            </div>
+            <!-- <div class="edit-container">
+                <h2 class="edit-title">제가 제대로 이야기를 들었는지 확인해주세요</h2>
+                <div class="edit-content">
+                    <div class="text-content" id="recognizedText" contenteditable="false"></div>
+                    <button class="edit-button" id="editButton">
+                        <img src="{{ url_for('static', filename='assets/edit.svg') }}" alt="편집">
+                    </button>
+                    <button class="edit-button" id="disableEditButton" style="display: none;">
+                        <img src="{{ url_for('static', filename='assets/check.svg') }}" alt="확인">
+                    </button>
+                </div>
+            </div> -->
+
+            <div class="bottom-buttons">
+                <button class="bottom-button secondary">
+                    <div class="button-content" id="saveButton">
+                        <span class="bottom-button-text">꿈 저장</span>
+                    </div>
+                </button>
+                <!-- <button class="bottom-button primary" id="nextButton">    
+                    <span class="bottom-button-text">다음</span>
+                    </a>
+                </button> -->
+                <button class="bottom-button primary" id="generateStoryButton">
+                    <!-- <a href="{{ url_for('interpretation1') }}" class="nav-button"> -->
+                    <span class="bottom-button-text">이미지/이야기 생성</span>
+                    </a>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 제목 입력 팝업 -->
+    <div id="titleInputPopup" class="popup" style="display: none;">
+        <div id="popupContent" class="popup-content">
+            <h3 class="popup-title">제목을 입력해주세요</h3>
+            <input type="text" id="dreamTitle" class="popup-input" placeholder="제목을 입력하세요">
+            <button id="confirmTitle" class="bottom-button popup-save-button">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // 세션에서 recognizedText를 가져와서 화면에 표시
+        document.getElementById('recognizedText').innerText = sessionStorage.getItem('recognizedText');
+
+        // 편집 버튼 클릭 시 텍스트 활성화 및 버튼 전환
+        document.getElementById('editButton').addEventListener('click', function () {
+            const textContent = document.getElementById('recognizedText');
+            textContent.contentEditable = true;
+            textContent.focus();
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('disableEditButton').style.display = 'inline';
+        });
+
+        // 확인 버튼 클릭 시 텍스트 비활성화 및 버튼 전환
+        document.getElementById('disableEditButton').addEventListener('click', function () {
+            const textContent = document.getElementById('recognizedText');
+            textContent.contentEditable = false;
+            document.getElementById('disableEditButton').style.display = 'none';
+            document.getElementById('editButton').style.display = 'inline';
+        });
+
+        // 꿈 저장 버튼 클릭 시 제목 입력 팝업 띄우기
+        document.getElementById('saveButton').addEventListener('click', function () {
+            document.getElementById('titleInputPopup').style.display = 'flex';
+        });
+
+        // 확인 버튼 클릭 시 제목 입력 및 저장
+        document.getElementById('confirmTitle').addEventListener('click', function () {
+            var title = document.getElementById('dreamTitle').value;
+            if (title) {
+                var recognizedText = document.getElementById('recognizedText').innerText;
+
+                fetch('/save-dream', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        content: recognizedText
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            showNotification('꿈이 저장되었습니다.');
+                            document.getElementById('titleInputPopup').style.display = 'none';
+                        }
+                    })
+                    .catch(error => console.error('저장 오류:', error));
+            } else {
+                alert("제목을 입력하세요!");
+            }
+        });
+
+        // 알림 메시지 표시 함수
+        function showNotification(message) {
+            alert(message); // 필요시 alert 대신 커스텀 메시지 박스 추가 가능
+        }
+
+        function closeEdit() {
+            document.getElementById('editScreen').classList.remove('active');
+        }
+
+        document.getElementById('generateStoryButton').addEventListener('click', function (event) {
+            event.preventDefault(); // 기본 동작 방지
+
+            // 텍스트 가져오기
+            const updatedText = document.getElementById('recognizedText').innerText.trim();
+
+            if (!updatedText) {
+                alert('내용이 비어 있습니다. 내용을 입력해주세요.');
+                return;
+            }
+
+            sessionStorage.setItem('generatedStory', updatedText);
+
+            // 로딩 페이지로 이동
+            window.location.href = "{{ url_for('loading_story1') }}";
+
+            // /generate-story API 호출
+            // fetch('/generate-story', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     },
+            //     body: JSON.stringify({ updated_text: updatedText })
+            // })
+            //     .then(response => {
+            //         if (!response.ok) {
+            //             throw new Error(`HTTP error! Status: ${response.status}`);
+            //         }
+            //         return response.json();
+            //     })
+            //     .then(data => {
+            //         if (data.story) {
+            //             // 생성된 이야기를 세션에 저장하거나 새로운 페이지로 이동
+            //             sessionStorage.setItem('generatedStory', data.story);
+            //             // alert('이야기가 성공적으로 생성되었습니다!');
+            //             window.location.href = "{{ url_for('interpretation1') }}"; // 적절한 페이지로 이동
+            //         } else {
+            //             alert('이야기 생성에 실패했습니다.');
+            //         }
+            //     })
+            //     .catch(error => {
+            //         console.error('API 호출 중 오류 발생:', error);
+            //         alert('이야기 생성 중 문제가 발생했습니다. 다시 시도해주세요.');
+            //     });
+        });
+
+    </script>
+</body>
+
+</html>
