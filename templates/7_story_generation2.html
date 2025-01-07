@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이야기</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='story_generation2.css') }}">
+</head>
+
+<body>
+    <div id="dreamStoryScreen" class="screen">
+        <div class="list-header">
+            <button class="back-button" id="backFromStory">
+                <img src="{{ url_for('static', filename='assets/back.svg') }}" alt="뒤로가기" class="back-icon">
+            </button>
+            <button class="close-button" id="closeStory">
+                <img src="{{ url_for('static', filename='assets/close.svg') }}" alt="닫기" class="close-icon">
+            </button>
+        </div>
+
+        <div class="edit-container">
+            <div class="edit-title">생성된 이야기입니다.</div>
+            <div class="edit-content">
+                <div class="text-content" id="generatedStory">
+                    <!-- 여기에 이야기가 들어와야 함 -->
+                </div>
+                <button class="share-button">
+                    <img src="{{ url_for('static', filename='assets/share.svg') }}" alt="share">
+                </button>
+            </div>
+        </div>
+
+        <div class="bottom-buttons">
+            <button class="bottom-button secondary" id="regenerateStory">
+                <div class="button-content">
+                    <span class="bottom-button-text">이야기 재생성</span>
+                </div>
+            </button>
+            <button class="bottom-button primary" id="generateImage">
+                <div class="button-content">
+                    <span class="bottom-button-text">이미지 생성</span>
+                </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const story = sessionStorage.getItem('generatedStory');
+            if (story) {
+                document.getElementById('generatedStory').innerText = story;
+            } else {
+                document.getElementById('generatedStory').innerText =
+                    '생성된 이야기를 불러오지 못했습니다. 이전 화면으로 돌아가 다시 시도해주세요.';
+            }
+
+            // 이미지 생성 버튼 클릭 시
+            document.getElementById('generateImage').addEventListener('click', () => {
+                const prompt = sessionStorage.getItem('generatedStory');
+                if (!prompt) {
+                    alert('생성된 이야기가 없습니다. 다시 시도해주세요.');
+                    return;
+                }
+
+                window.location.href = "{{ url_for('loading_image2') }}";
+
+                // fetch('/generate-image', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ prompt })
+                // })
+                // .then(response => response.json())
+                // .then(data => {
+                //     if (data.image_url) {
+                //         sessionStorage.setItem('generatedImage', data.image_url);
+                //         window.location.href = '/image_generate2';
+                //     } else {
+                //         alert('이미지 생성에 실패했습니다.');
+                //     }
+                // })
+                // .catch(error => console.error('이미지 생성 중 오류:', error));
+            });
+        });
+
+        document.getElementById('regenerateStory').addEventListener('click', () => {
+            window.location.href = '/loading_story2';
+        });
+
+        document.getElementById('backFromStory').addEventListener('click', () => {
+            window.location.href = '/story_generate1';
+        });
+
+        document.getElementById('closeStory').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+    </script>
+</body>
+
+</html>
