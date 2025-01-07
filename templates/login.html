@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #b0b0b0;
+      text-align: center;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      width: 300px;
+      gap: 10px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 30px;
+      border: none;
+      outline: none;
+    }
+
+    input[type="email"], input[type="password"] {
+      background-color: #1e1e1e;
+      color: white;
+      border: 1px solid #b0b0b0;
+    }
+
+    input[type="email"]::placeholder, input[type="password"]::placeholder {
+      color: #b0b0b0;
+    }
+
+    .button {
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 30px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    .signin {
+      background-color: #007BFF;
+      color: white;
+    }
+
+    .signup {
+      background-color: transparent;
+      color: white;
+      border: 1px solid #b0b0b0;
+    }
+
+    .success-notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #4CAF50;
+      color: white;
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      display: none;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <h1>몽글몽글</h1>
+  <p>꿈을 꾸는 순간에도<br>함께 할 수 있습니다</p>
+
+  <form onsubmit="login(event)">
+    <input type="email" placeholder="Email" id="email" required>
+    <input type="password" placeholder="Password" id="password" required>
+    <button type="submit" class="button signin">sign in</button>
+    <button type="button" class="button signup" onclick="redirectToSignup()">sign up</button>
+  </form>
+
+  <div id="successNotification" class="success-notification">
+    로그인 성공!
+  </div>
+
+  <script>
+    function login(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      })
+      .then(response => {
+        if (response.ok) {
+          showNotification(() => {
+            window.location.href = '/home'; // 성공 시 홈 화면으로 이동
+          });
+        } else {
+          alert('로그인 실패: 이메일 또는 비밀번호를 확인하세요.');
+        }
+      })
+      .catch(error => console.error('로그인 오류:', error));
+    }
+
+    function redirectToSignup() {
+      window.location.href = '/signUp';
+    }
+
+    function showNotification(callback) {
+      const notification = document.getElementById('successNotification');
+      notification.style.display = 'block';
+      notification.style.opacity = 1;
+
+      setTimeout(() => {
+        notification.style.opacity = 0;
+        setTimeout(() => {
+          notification.style.display = 'none';
+          if (callback) callback();
+        }, 1000); // 1초 후 사라짐
+      }, 2000); // 2초 동안 표시
+    }
+  </script>
+</body>
+</html>
