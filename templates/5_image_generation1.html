@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이미지 화면</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='image_generation1.css') }}"
+    />
+  </head>
+  <body>
+    <div id="imageScreen" class="screen">
+      <div class="list-header">
+        <button class="back-button" id="backFromImage">
+          <img
+            src="{{ url_for('static', filename='assets/back.svg') }}"
+            alt="뒤로가기"
+            class="back-icon"
+          />
+        </button>
+        <button class="close-button" id="closeImage">
+          <img
+            src="{{ url_for('static', filename='assets/close.svg') }}"
+            alt="닫기"
+            class="close-icon"
+          />
+        </button>
+      </div>
+      <div class="image-container">
+        <h2 class="image-title">당신의 꿈을 기반으로 생성된 이미지예요</h2>
+        <div class="content-wrapper">
+          <div class="image-content">
+            <!-- 여기에 생성된 이미지가 표시됩니다 -->
+            <img id="dreamImage" src="" alt="생성된 이미지" />
+          </div>
+        </div>
+      </div>
+      <div class="bottom-buttons">
+        <button class="bottom-button secondary" id="regenerateImage">
+          <span class="bottom-button-text">꿈 이미지 재생성</span>
+        </button>
+        <button class="bottom-button primary" id="shareDreamImage">
+          <span class="bottom-button-text">공유</span>
+        </button>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='image_generation1.js') }}"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // 세션에서 dreamImage 가져오기
+        const imageUrl = sessionStorage.getItem('dreamImage');
+    
+        if (imageUrl) {
+          document.getElementById('dreamImage').src = imageUrl; // 이미지 URL 설정
+        } else {
+          alert('이미지를 불러올 수 없습니다. 이전 화면으로 돌아가 다시 시도해주세요.');
+        }
+      });
+    
+      // 뒤로가기 버튼 이벤트
+      document.getElementById('backFromImage').addEventListener('click', function () {
+        window.location.href = '/interpretation1'; // 이전 화면으로 이동
+      });
+    
+      // 닫기 버튼 이벤트
+      document.getElementById('closeImage').addEventListener('click', function () {
+        window.location.href = '/'; // 메인 화면으로 이동
+      });
+    
+      // 이미지 재생성 버튼
+      document.getElementById('regenerateImage').addEventListener('click', function () {
+        sessionStorage.removeItem('dreamImage'); // 기존 이미지 삭제
+        window.location.href = '/loading_image1';
+      });
+    </script>
+  </body>
+</html>
