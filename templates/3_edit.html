@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Interpretation</title>
+    <style>
+        /* 스타일 추가 */
+        .text-content {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .bottom-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+        }
+
+        .nav-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .nav-button:hover {
+            background-color: #0056b3;
+        }
+
+        .text {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="text-content">
+        여기에 업데이트된 텍스트가 표시됩니다.
+    </div>
+
+    <button class="bottom-button" id="generateStoryButton">
+        <a href="{{ url_for('interpretation1') }}" class="nav-button">
+            <span class="text">이미지/이야기 생성</span>
+        </a>
+    </button>
+
+    <script>
+        document.getElementById('generateStoryButton').addEventListener('click', function(event) {
+            event.preventDefault(); // 기본 클릭 동작 방지
+
+            // 텍스트 가져오기
+            const updatedText = document.querySelector('.text-content').innerText;
+
+            // `generate-story` API 호출
+            fetch('/generate-story', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ updated_text: updatedText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("API 응답:", data);
+
+                // API 호출 후 페이지 이동
+                window.location.href = "{{ url_for('interpretation1') }}";
+            })
+            .catch(error => {
+                console.error('API 호출 중 오류 발생:', error);
+                alert('이야기 생성 중 문제가 발생했습니다. 다시 시도해주세요.');
+            });
+        });
+    </script>
+</body>
+</html>
