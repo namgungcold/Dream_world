@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_dreamgallery.css') }}">
+    <title>몽글몽글 - 꿈 갤러리</title>
+    <style>
+        /* 기존 스타일 유지 */
+        .welcome-text {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #02050f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            z-index: 10;
+            border-bottom: 2px solid #02050f;
+        }
+
+        .container {
+            margin-top: 60px;
+        }
+
+        .dream-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+            justify-content: space-between;
+        }
+
+        .dream-timestamp {
+            font-size: 0.9em;
+            color: #10a10b;
+            margin-right: 10px;
+        }
+
+        .dream-text {
+            text-align: left;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            width: 80%;
+        }
+
+        .checkbox-wrapper {
+            margin-left: 10px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #02050f;
+            padding: 10px;
+            z-index: 20;
+        } */
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 60%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .modal-close {
+            font-size: 1.5em;
+            color: #000;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        /* 알림 메시지 박스 스타일 */
+        .notification {
+            display: none;
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            z-index: 9999;
+        }
+
+        .notification.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="homeScreen" class="screen active">
+            <div class="welcome-text">
+                <h1 class="greeting">몽글몽글 꿈 갤러리</h1>
+            </div>
+            <ul class="dream-list">
+                {% for dream in dreams %}
+                <li class="dream-item" data-id="{{ dream.id }}" data-title="{{ dream.title }}"
+                    data-content="{{ dream.content }}">
+                    <div class="dream-timestamp">{{ dream.timestamp.strftime('%Y-%m-%d') }}</div>
+                    <div class="dream-text">{{ dream.title }}</div>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="dream-checkbox" data-id="{{ dream.id }}">
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="bottom-nav">
+                <a class="nav-button" href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='assets/plus_icon2_w.png') }}" alt="갤러리" class="icon" />
+                    <span class="text">꿈 추가</span>
+                </a>
+                <a class="nav-button" href="javascript:void(0);" id="deleteSelected">
+                    <img src="{{ url_for('static', filename='assets/remove_icon_w.png') }}" alt="마이페이지" class="icon" />
+                    <span class="text">선택한 꿈 삭제</span>
+                </a>
+            </div>
+            <!-- <div class="bottom-nav">
+                <a class="nav-button" href="{{ url_for('home') }}">
+                    <span class="text">꿈 추가</span>
+                </a>
+                <a class="nav-button" href="javascript:void(0);" id="deleteSelected">
+                    <span class="text">선택한 꿈 삭제</span>
+                </a>
+            </div> -->
+        </div>
+    </div>
+    <div class="modal" id="dreamModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeModal">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <p id="dreamContent"></p>
+        </div>
+    </div>
+    <!-- 알림 메시지 박스 -->
+    <div id="notification" class="notification">선택된 꿈이 삭제되었습니다.</div>
+    <script>
+        const dreamItems = document.querySelectorAll('.dream-item');
+        const modal = document.getElementById('dreamModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('dreamContent');
+        const closeModal = document.getElementById('closeModal');
+        const notification = document.getElementById('notification');
+
+        dreamItems.forEach(item => {
+            item.addEventListener('click', (event) => {
+                if (!event.target.classList.contains('dream-checkbox')) {
+                    const title = item.getAttribute('data-title');
+                    const content = item.getAttribute('data-content');
+                    modalTitle.textContent = title;
+                    modalContent.textContent = content;
+                    modal.style.display = 'flex';
+                }
+            });
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        document.getElementById('deleteSelected').addEventListener('click', () => {
+            const selectedDreamIds = [];
+            document.querySelectorAll('.dream-checkbox:checked').forEach(checkbox => {
+                selectedDreamIds.push(checkbox.getAttribute('data-id'));
+            });
+
+            if (selectedDreamIds.length > 0) {
+                fetch('/delete_dreams', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ids: selectedDreamIds }),
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            showNotification('선택된 꿈이 삭제되었습니다.');
+                            location.reload();
+                        } else {
+                            response.json().then(data => {
+                                showNotification(data.error || '삭제에 실패했습니다.');
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('삭제 요청 중 오류 발생:', error);
+                        showNotification('삭제 중 오류가 발생했습니다.');
+                    });
+            } else {
+                showNotification('삭제할 꿈을 선택해주세요.');
+            }
+        });
+
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000); // 3초 후 알림 메시지 숨김
+        }
+    </script>
+</body>
+
+</html>
