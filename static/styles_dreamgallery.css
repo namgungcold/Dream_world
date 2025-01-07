@@ -1,0 +1,1329 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+    Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background: white;
+}
+
+.container {
+  width: 100%;
+  height: 100vh;
+  max-width: 100%;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 상태바 스타일 */
+.status-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+}
+
+.time {
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.status-icons {
+  display: flex;
+  gap: 7px;
+}
+
+.cellular,
+.wifi,
+.battery {
+  background: #ffffff;
+  width: 18px;
+  height: 12px;
+}
+
+/* 화면 전환 스타일 */
+.screen {
+  display: none;
+  position: relative;
+  width: 375px;
+  height: 812px;
+  background: linear-gradient(180deg, #111119 0%, #354E8B 100%);
+}
+
+.screen.active {
+  display: block;
+}
+
+/* 홈 화면 스타일 */
+.welcome-text {
+  position: relative;
+  left: 0;
+  padding: 154px 36px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.welcome-text .greeting,
+.welcome-text p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(20px, 5vw, 24px);
+  line-height: 116%;
+  color: rgba(255, 255, 255, 0.86);
+  font-weight: 400;
+}
+
+.welcome-text .name {
+  font-weight: 600;
+}
+
+/* 하단 네비게이션 스타일 */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 86px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  gap: 40px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-item span {
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  border: none;
+}
+
+/* 홈 화면 시작 버튼 스타일 */
+.mic-button {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  left: calc(50% - 96px/2);
+  bottom: 0;
+  background: #252525;
+  border-radius: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+}
+
+.mic-button .button-text {
+  color: white;
+  font-size: 14px;
+}
+
+/* 녹음 화면 버튼 스타일은 그대로 유지 */
+.mic-button.recording {
+  background: #252525;
+}
+
+.mic-button.recording.active {
+  background: #FF4B4B;
+  animation: pulse 1.5s infinite;
+}
+
+/* 녹음 화면 스타일 */
+#recordScreen {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(180deg, #111119 0%, #354E8B 100%);
+  z-index: 100;
+  top: 0;
+  left: 0;
+}
+
+/* 상단 그라데이션 오버레이 */
+.gradient-overlay {
+  position: absolute;
+  width: 375px;
+  height: 350px;
+  left: 0px;
+  top: 0px;
+  background: linear-gradient(180deg, #000000 -42.86%, rgba(6, 6, 6, 0) 100%);
+  pointer-events: none;
+}
+
+/* 음성 텍스트 컨테이너 */
+.speech-container {
+  position: absolute;
+  bottom: 400px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 315px;
+  min-height: 0;
+  max-height: 60vh;
+  background: transparent;
+  overflow-y: auto;
+  transition: min-height 0.3s ease-out;
+  padding: 20px 0;
+}
+
+/* 음성인식 텍스트 */
+.speech-text {
+  font-family: 'Pretendard';
+  font-size: 20px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.86);
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+
+/* 음성인식 활성화 시 컨테이너 확장 */
+.speech-container.active {
+  min-height: 200px;
+}
+
+/* 하단 컨트롤 영역 */
+.bottom-controls {
+  position: fixed;
+  left: 50%;
+  bottom: 56px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 40px;
+}
+
+/* 녹음 상태 텍스트 */
+.bottom-controls .recording-status {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: center;
+  z-index: 1;
+}
+
+/* 상태 텍스트 */
+.status-text {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 116%;
+  text-align: center;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.86);
+  white-space: nowrap;
+  width: 100%;
+  min-width: max-content;
+}
+
+/* 타이머 */
+.timer {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 116%;
+  text-align: center;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.86);
+  white-space: nowrap;
+}
+
+/* 녹음 버튼 */
+.mic-button.recording {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 29px;
+  gap: 8px;
+  width: 96px;
+  height: 96px;
+  background: #252525;
+  border-radius: 48px;
+  margin-top: auto;
+}
+
+/* 버튼 주변 이펙트 */
+.mic-button.recording::before {
+  content: '';
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(63, 226, 255, 0.1);
+  border-radius: 329.412px;
+}
+
+.mic-button.recording::after {
+  content: '';
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(63, 226, 255, 0.1);
+  border-radius: 376.471px;
+}
+
+/* 상태 텍스트 관련 스타일 */
+.recording-text {
+  display: none;
+}
+
+.start-text {
+  display: block;
+}
+
+/* 녹음 중일 때 텍스트 표시 상태 */
+.mic-button.recording.active .button-text {
+  content: "중지";
+}
+
+.mic-button.recording.active ~ .recording-status .recording-text {
+  display: block;
+}
+
+.mic-button.recording.active ~ .recording-status .start-text {
+  display: none;
+}
+
+/* 녹음 중일 때의 스타일 추가 */
+.mic-button.recording.active {
+  background: #FF4B4B;  /* 녹음 중일 때 빨간색으로 변경 */
+  animation: pulse 1.5s infinite;  /* 펄스 애니메이션 추가 */
+}
+
+/* 펄스 애니메이션 정의 */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 반응형 스타일 */
+@media (max-width: 375px) {
+  .container {
+    padding: 10px;
+  }
+
+  .welcome-text {
+    margin-top: 100px;
+    font-size: 20px;
+  }
+}
+
+/* 헤더와 종료 버튼 스타일 추가 */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  padding: 0 16px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 1000;
+}
+
+.close-button {
+  position: absolute;
+  top: 52px;
+  right: 16px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.close-icon {
+  width: 48px;
+  height: 48px;
+  opacity: 0.8;
+}
+
+.close-button:hover .close-icon {
+  opacity: 1;
+}
+
+/* 녹음 상태 컨테이너 여백 조정 */
+.recording-status {
+  margin-top: 80px;
+}
+
+/* 음성 인식 텍스트 컨테이너 스타일 */
+.speech-container {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+/* 스크린별로 필요한 패딩 개별 적용 */
+#homeScreen {
+  padding: 44px 20px 20px 20px;
+  background: linear-gradient(180deg, #111119 0%, #354E8B 66.01%);
+}
+
+.start-button {
+  width: 96px;
+  height: 96px;
+  background: #3C67EF;
+  border-radius: 48px;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.nav-button {
+  color: white;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 메인 컨테이너 */
+#homeScreen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #111119 0%, #354E8B 66.01%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 텍스트 영역 */
+.welcome-text {
+  position: relative;
+  left: 0;
+  padding: 154px 36px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.welcome-text .greeting,
+.welcome-text p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(20px, 5vw, 24px);
+  line-height: 116%;
+  color: rgba(255, 255, 255, 0.86);
+  font-weight: 400;
+}
+
+.welcome-text .name {
+  font-weight: 600;
+}
+
+/* 하단 네비게이션 */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 86px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  gap: 40px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* 네비게이션 버튼 */
+.nav-button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 66px;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+}
+
+.nav-button .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-button .text {
+  font-family: 'Pretendard';
+  font-size: 13px;
+  line-height: 22px;
+  color: #FFFFFF;
+}
+
+/* 시작 버튼 */
+.start-button {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -48px;
+  background: #111119;
+  border-radius: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 29px;
+  border: none;
+  z-index: 2;
+}
+
+/* 툴팁 */
+.tooltip {
+  position: absolute;
+  width: 214px;
+  height: 31px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 152px;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0px 16px 32px -4px rgba(12, 12, 13, 0.1);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tooltip-text {
+  font-size: 13px;
+  line-height: 116%;
+  color: rgba(255, 255, 255, 0.86);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 별 효과 */
+.star {
+  position: absolute;
+  background: #FFFFD2;
+  opacity: 0.5;
+  box-shadow: 0px 0px 1.57377px rgba(255, 253, 135, 0.25);
+  filter: blur(4px);
+  border-radius: 2.36066px;
+}
+
+.star-1 {
+  width: 24px;
+  height: 24px;
+  left: 223px;
+  top: 460px;
+}
+
+.star-2 {
+  width: 16px;
+  height: 16px;
+  left: 48px;
+  top: 527px;
+  filter: blur(1.77778px);
+}
+
+.star-3 {
+  width: 16px;
+  height: 16px;
+  left: 231px;
+  top: 126px;
+  opacity: 0.3;
+}
+
+.star-4 {
+  width: 16px;
+  height: 16px;
+  left: 319px;
+  top: 254px;
+  filter: blur(2.66667px);
+}
+
+/* 녹음 버튼 컨테이너 */
+.recording-container {
+  position: relative;
+  width: 96px;
+  height: 96px;
+}
+
+/* 녹음 중 이펙트 - 바깥 원 */
+.recording-container::before {
+  content: '';
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  left: calc(50% - 112px/2);
+  top: calc(50% - 112px/2);
+  background: rgba(63, 226, 255, 0.1);
+  border-radius: 329.412px;
+}
+
+/* 녹음 중 이펙트 - 중간 원 */
+.recording-container::after {
+  content: '';
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  left: calc(50% - 128px/2);
+  top: calc(50% - 128px/2);
+  background: rgba(63, 226, 255, 0.1);
+  border-radius: 376.471px;
+}
+
+/* 녹음 버튼 */
+.mic-button.recording {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  left: calc(50% - 96px/2);
+  bottom: 0;
+  background: #252525;
+  border-radius: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 정지 아이콘 */
+.mic-button.recording .stop-icon {
+  width: 32px;
+  height: 32px;
+  background: #FFFFFF;
+}
+
+/* 숨겨진 큰 원 (필요시 활성화) */
+.recording-effect.hidden {
+  position: absolute;
+  visibility: hidden;
+  width: 140px;
+  height: 140px;
+  left: calc(50% - 140px/2);
+  top: calc(50% - 140px/2);
+  background: rgba(63, 191, 255, 0.1);
+  border-radius: 411.765px;
+}
+
+/* 녹음 버튼 기본 스타일 */
+.mic-button {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  left: calc(50% - 96px/2);
+  bottom: 0;
+  background: #252525;
+  border-radius: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+}
+
+/* 녹음 중일 때 버튼 스타일 */
+.mic-button.recording {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 29px;
+  gap: 8px;
+  width: 96px;
+  height: 96px;
+  background: #252525;
+  border-radius: 48px;
+  margin-top: auto;
+  z-index: 10;
+}
+
+/* 녹음 중일 때 이펙트 - 바깥 원 */
+.mic-button.recording::before {
+  content: '';
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(63, 226, 255, 0.1);
+  border-radius: 329.412px;
+  animation: pulse 2s infinite;
+}
+
+/* 녹음 중일 때 이펙트 - 중간 원 */
+.mic-button.recording::after {
+  content: '';
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(63, 226, 255, 0.1);
+  border-radius: 376.471px;
+  animation: pulse 2s infinite 0.3s;
+}
+
+/* 펄스 애니메이션 */
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 아이콘 스타일 */
+.mic-icon, .stop-icon {
+  width: 32px;
+  height: 32px;
+  background: #FFFFFF;
+  z-index: 11;
+}
+
+/* 녹음 버튼 기본 */
+.bottom-controls .mic-button {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  background: #252525;
+  border-radius: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  z-index: 10;
+}
+
+/* 녹음 중일 때 버튼 스타일 */
+.bottom-controls .mic-button.recording {
+  background: #252525;
+  z-index: 10;
+}
+
+/* 녹음 중일 때 이펙트 - 바깥 원 */
+.bottom-controls .mic-button.recording::before {
+  content: '';
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(63, 226, 255, 0.1);
+  border-radius: 329.412px;
+  animation: pulse 2s infinite;
+  z-index: -1;
+}
+
+/* 녹음 중일 때 이펙트 - 중간 원 */
+.bottom-controls .mic-button.recording::after {
+  content: '';
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(63, 226, 255, 0.1);
+  border-radius: 376.471px;
+  animation: pulse 2s infinite 0.3s;
+  z-index: -2;
+}
+
+/* 녹음 컨테이너 */
+.record-container {
+  position: fixed;
+  left: 50%;
+  bottom: 56px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 40px;
+}
+
+/* 텍스트 컨테이너 */
+.text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.status-text {
+  font-family: 'Pretendard';
+  font-size: 18px;
+  line-height: 116%;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.timer {
+  font-family: 'Inter';
+  font-size: 14px;
+  line-height: 116%;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+/* 버튼 컨테이너 */
+.button-container {
+  position: relative;
+  width: 96px;
+  height: 96px;
+}
+
+/* 녹음 버튼 */
+.mic-button {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  background: #252525;
+  border-radius: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  z-index: 10;
+}
+
+/* 녹음 중일 때 버튼 스타일 */
+.mic-button.recording {
+  background: #252525;
+  z-index: 10;
+}
+
+/* 녹음 중일 때 이펙트 - 바깥 원 */
+.mic-button.recording::before {
+  content: '';
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(63, 226, 255, 0.1);
+  border-radius: 329.412px;
+  animation: pulse 2s infinite;
+  z-index: -1;
+}
+
+/* 녹음 중일 때 이펙트 - 중간 원 */
+.mic-button.recording::after {
+  content: '';
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(63, 226, 255, 0.1);
+  border-radius: 376.471px;
+  animation: pulse 2s infinite 0.3s;
+  z-index: -2;
+}
+
+/* 펄스 애니메이션 */
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 아이콘 스타일 */
+.mic-icon, .stop-icon {
+  width: 32px;
+  height: 32px;
+  background: #FFFFFF;
+  z-index: 11;
+}
+
+.loading-icon {
+  width: 32px;
+  height: 32px;
+  background: #FFFFFF;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.voice-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 29px;
+  gap: 8px;
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  left: calc(50% - 96px/2);
+  bottom: 0px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 48px;
+}
+
+.center-loading-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.loading-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 29px;
+  gap: 8px;
+  width: 96px;
+  height: 96px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 48px;
+}
+
+.loading-button svg {
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  color: white;
+  font-size: 16px;
+  text-align: center;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.loading-button .loading-icon {
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+}
+
+/* 메인 컨테이너 */
+.screen {
+  position: relative;
+  width: 375px;
+  height: 812px;
+  background: linear-gradient(180deg, #111119 0%, #354E8B 100%);
+}
+
+/* 로딩 컨테이너 */
+.center-loading-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 로딩 버튼 */
+.loading-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 29px;
+  gap: 8px;
+  width: 96px;
+  height: 96px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 48px;
+}
+
+.loading-button .loading-icon {
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+  filter: brightness(0) invert(1);
+}
+
+/* 텍스트 편집 화면 */
+.edit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  gap: 16px;
+  height: calc(100vh - 104px);
+}
+
+.edit-title {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 140%;
+  color: rgba(255, 255, 255, 0.86);
+  margin-top: 80px;
+  margin-bottom: 16px;
+}
+
+.edit-content {
+  position: relative;
+  width: 100%;
+  height: calc(80% - 96px);
+  background: #FFFFFF;
+  border: 1px solid #D0D4DC;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.text-content {
+  font-family: 'Pretendard';
+  font-size: 16px;
+  line-height: 140%;
+  color: #000000;
+  height: calc(100% - 48px);
+  overflow-y: auto;
+}
+
+.edit-button {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  width: 48px;
+  height: 48px;
+  background: #111119;
+  border-radius: 60px;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.bottom-button {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: calc(100% - 48px);
+  height: 56px;
+  background: #3C67EF;
+  border-radius: 40px;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.bottom-button-text {
+  font-family: 'Pretendard';
+  font-size: 16px;
+  line-height: 20px;
+  color: #FFFFFF;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bottom-button-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 24px;
+  height: 104px;
+  background: linear-gradient(180deg, rgba(17, 17, 25, 0) 0%, #111119 100%);
+}
+
+.start-tooltip {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 8px;
+  width: 186px;
+  height: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 72px;
+  background: rgba(0, 0, 0, 0.9);
+  box-shadow: 0px 16px 32px -4px rgba(12, 12, 13, 0.1), 0px 4px 4px -4px rgba(12, 12, 13, 0.05);
+  border-radius: 4px;
+  z-index: 10;
+  font-family: 'Pretendard';
+  font-size: 11px;
+  line-height: 116%;
+  color: #FFFFFF;
+}
+
+.start-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid rgba(0, 0, 0, 0.9);
+}
+
+/* 녹음 시작 버튼 툴팁 */
+.record-tooltip {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 12px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 20px;
+    left: calc(50% - 96px/2 - 0.5px);  /* 버튼과 동일한 가로 위치 */
+    top: -104px;  /* 버튼 top(-48px)에서 버튼 높이(48px)와 간격(8px)을 뺀 위치 */
+    white-space: nowrap;
+    font-family: 'Pretendard';
+    font-size: 14px;
+    color: #FFFFFF;
+    z-index: 2;
+}
+
+/* 편집 버튼 툴팁 */
+.tooltip {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 8px;
+    width: 186px;
+    height: 24px;
+    right: 0;
+    bottom: 72px;
+    background: rgba(0, 0, 0, 0.9);
+    box-shadow: 0px 16px 32px -4px rgba(12, 12, 13, 0.1), 0px 4px 4px -4px rgba(12, 12, 13, 0.05);
+    border-radius: 4px;
+    z-index: 10;
+    font-family: 'Pretendard';
+    font-size: 11px;
+    line-height: 116%;
+    color: #FFFFFF;
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 14px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid rgba(0, 0, 0, 0.9);
+}
+
+.tooltip {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 8px;
+    width: 186px;
+    height: 24px;
+    right: 0;
+    bottom: 72px;
+    background: rgba(0, 0, 0, 0.9);
+    box-shadow: 0px 16px 32px -4px rgba(12, 12, 13, 0.1), 0px 4px 4px -4px rgba(12, 12, 13, 0.05);
+    border-radius: 4px;
+    z-index: 10;
+    font-family: 'Pretendard';
+    font-size: 11px;
+    line-height: 116%;
+    color: #FFFFFF;
+}
+
+.tooltip-text {
+    font-family: 'Pretendard';
+    font-size: 11px;
+    line-height: 116%;
+    color: #FFFFFF;
+}
+
+/* 시작 화면의 툴팁 */
+div.tooltip {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 20px;
+    width: auto;
+    height: 24px;
+    left: 50%;
+    top: 300px; /* 화면 중앙 근처에서 시작 */
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.tooltip-text {
+    font-family: 'Pretendard';
+    font-size: 11px;
+    line-height: 116%;
+    color: #FFFFFF;
+}
+
+/* 편집 화면의 툴팁은 다른 스타일 적용 */
+.edit-content .tooltip {
+    position: absolute;
+    width: 186px;
+    height: 24px;
+    right: 0;
+    left: auto;
+    bottom: 72px;
+    top: auto;
+    transform: none;
+    background: rgba(0, 0, 0, 0.9);
+    box-shadow: 0px 16px 32px -4px rgba(12, 12, 13, 0.1), 0px 4px 4px -4px rgba(12, 12, 13, 0.05);
+    border-radius: 4px;
+}
+
+/* Voice button container */
+.voice-button-container {
+    position: absolute;
+    width: 96px;
+    height: 96px;
+    left: calc(50% - 96px/2 - 0.5px);
+    top: -48px;
+}
+
+/* 시작 화면의 툴팁 */
+.tooltip {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 20px;
+    width: auto;
+    height: 24px;
+    left: 50%;
+    bottom: calc(100% + 16px);
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.tooltip-text {
+    font-family: 'Pretendard';
+    font-size: 11px;
+    line-height: 116%;
+    color: #FFFFFF;
+}
+
+/* 편집 화면의 툴팁은 다른 스타일 적용 */
+.edit-content .tooltip {
+    position: absolute;
+    width: 186px;
+    height: 24px;
+    right: 0;
+    left: auto;
+    bottom: 72px;
+    transform: none;
+    background: rgba(0, 0, 0, 0.9);
+    box-shadow: 0px 16px 32px -4px rgba(12, 12, 13, 0.1), 0px 4px 4px -4px rgba(12, 12, 13, 0.05);
+    border-radius: 4px;
+}
+
+/* 편집 화면만 중앙 정렬 */
+#editScreen {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(180deg, #111119 0%, #354E8B 100%);
+}
+
