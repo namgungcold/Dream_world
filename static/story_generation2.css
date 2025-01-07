@@ -1,0 +1,240 @@
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Pretendard", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background: white;
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #111119 0%, #354e8b 100%);
+}
+
+/* 상단 헤더 (닫기 버튼 포함) */
+.list-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 52px 16px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(180deg, #111119 0%, rgba(17, 17, 25, 0) 100%);
+  z-index: 1000;
+  width: 100vw;
+}
+
+.back-button {
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.back-icon {
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.back-button:hover .back-icon {
+  opacity: 1;
+}
+
+.close-button {
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.close-icon {
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.close-button:hover .close-icon {
+  opacity: 1;
+}
+
+#dreamStoryScreen {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(180deg, #111119 0%, #354e8b 100%);
+  z-index: 100;
+}
+
+.edit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  width: 100%;
+  height: 100%;
+  padding-top: max(104px, calc(env(safe-area-inset-top) + 52px));
+  padding-bottom: calc(104px + env(safe-area-inset-bottom));
+}
+
+.edit-title {
+  font-family: "Pretendard";
+  font-weight: 400;
+  font-size: clamp(16px, 5vw, 18px);
+  line-height: 140%;
+  color: rgba(255, 255, 255, 0.86);
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.edit-content {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #d0d4dc;
+  border-radius: 8px;
+  padding: 24px;
+  min-height: 200px;
+}
+/* 
+.edit-buttons {
+  display: flex;
+  gap: 10px; 
+}
+
+.edit-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+} */
+
+.text-content {
+  font-family: "Pretendard";
+  font-size: clamp(16px, 4vw, 22px);
+  line-height: 140%;
+  color: #000000;
+  height: calc(100% - 48px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.share-button {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: #252525;
+  border-radius: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.bottom-buttons {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 8px 24px 24px;
+  background: rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 8px;
+}
+
+.bottom-button {
+  flex: 1;
+  height: 56px;
+  border-radius: 40px;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+}
+
+.bottom-button.primary {
+  background: #3c67ef;
+}
+
+.bottom-button.secondary {
+  background: #111119;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 10px;
+  gap: 3px;
+}
+
+.button-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+}
+
+.token-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  height: 12px;
+}
+
+.token-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.token-text {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 100%;
+  color: #ffffff;
+}
+
+.bottom-button-text {
+  font-family: "Pretendard";
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 20px;
+  color: #ffffff;
+}
+
+.bottom-button.secondary .bottom-button-text {
+  font-weight: 400;
+}
