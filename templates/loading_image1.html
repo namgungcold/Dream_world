@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로딩 화면</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
+</head>
+
+<body>
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-message">
+            <p>잠시만 기다려주세요.</p>
+            <div class="spinner"></div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='loading.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const recognizedText = sessionStorage.getItem('recognizedText');
+
+            if (!recognizedText) {
+                alert('데이터가 없습니다. 이전 페이지로 돌아갑니다.');
+                window.location.href = "{{ url_for('interpretation1') }}"; // 메인 페이지로 이동
+                return;
+            }
+
+            // API 호출
+            fetch('/generate-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: recognizedText }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.image_url) {
+                        sessionStorage.setItem('dreamImage', data.image_url); // 이미지 URL 저장
+                        window.location.href = '/image_generate1'; // 이미지 생성 화면으로 이동
+                    } else {
+                        alert('이미지 생성에 실패했습니다. 다시 시도해주세요.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('이미지 생성 오류:', error);
+                    alert('이미지 생성 중 오류가 발생했습니다.');
+                });
+        });
+    </script>
+</body>
+
+</html>
