@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>녹음</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_record.css') }}">
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <script>
+      let socket;
+      let startTime; // 타이머 시작 시간
+      let timerInterval; // 타이머 업데이트를 위한 인터벌
+      let elapsedTime = 0; // 경과 시간 (초)
+      let combinedText = ''; // 모든 녹음 텍스트를 저장 -> 이 부분 추가가
+
+
+      function fetchRecognitionResult() {
+        fetch('/get-recognition-result')
+          .then(response => response.json())
+          .then(data => {
+            document.querySelector('.speech-text').innerText = data.recognized_text;
+          });
+      }
+
+      function startSTT() {
+        fetch('/stt', { method: 'POST' })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data.status);
+
+            // 타이머 시작
+            startTime = Date.now() - elapsedTime * 1000; // 타이머 시작 시간 설정
+            timerInterval = setInterval(updateTimer, 1000); // 1초 간격으로 타이머 갱신
+          });
+      }
+
+      // 음성 인식 중지
+      function stopSTT() {
+        fetch('/stop-stt', { method: 'POST' })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data.status);
+            clearInterval(timerInterval); // 타이머 중지
+
+            // 모든 텍스트 저장
+            recognizedText = data.recognized_text; 
+
+            // 텍스트를 sessionStorage에 저장
+            sessionStorage.setItem('recognizedText', recognizedText);
+
+            // 편집 화면으로 이동
+            window.location.href = "{{ url_for('edit') }}";
+          });
+      }
+
+      // 편집 화면으로 이동 (모든 텍스트 전달) -> (이 부분 추가)
+      function goToEditScreen() {
+        sessionStorage.setItem('recognizedText', combinedText.trim());
+        window.location.href = "{{ url_for('edit') }}";
+      }
+
+      // 타이머 업데이트 함수
+      function updateTimer() {
+        elapsedTime = Math.floor((Date.now() - startTime) / 1000); // 경과 시간(초) 계산
+        const minutes = Math.floor(elapsedTime / 60); // 분
+        const seconds = elapsedTime % 60; // 초
+
+        // 화면에 타이머 표시
+        document.querySelector('.timer').innerText = 
+          `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+
+      // 이벤트 리스너 설정
+      document.addEventListener('DOMContentLoaded', () => {
+        socket = io();  // 서버와 WebSocket 연결
+
+        // 음성 인식 결과를 실시간으로 받으면 화면에 업데이트
+        socket.on('recognized_text', function(data) {
+          document.querySelector('.speech-text').innerText = data.text;
+        });
+
+        startSTT(); // 페이지 로드 시 음성 인식 시작
+
+        const micButton = document.getElementById('recordButton');
+        micButton.addEventListener('click', stopSTT); // 마이크 버튼 클릭 시 음성 인식 종료
+      });
+
+    </script>
+  </head>
+  <body>
+    <!-- 녹음 화면 -->
+    <div id="recordScreen" class="screen">
+      <div class="gradient-overlay"></div>
+      <button class="close-button" id="closeRecord">
+        <img src="{{ url_for('static', filename='assets/close.svg') }}" alt="닫기" class="close-icon" />
+      </button>
+
+      <div class="speech-container">
+        <div class="speech-text"></div>
+      </div>
+
+      <div class="record-container">
+        <div class="text-container">
+          <div class="status-text"></div>
+          <div class="timer">00:00</div>
+        </div>
+
+        <div class="button-container">
+          <!-- mic-button 클릭 시 음성 인식 종료 요청 -->
+          <button class="mic-button" id="recordButton" type="button">
+            <div class="mic-icon"></div>
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
