@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이미지 화면</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='image_generation2.css') }}">
+</head>
+<body>
+    <div id="imageScreen" class="screen">
+        <div class="list-header">
+            <button class="back-button" id="backFromImage">
+                <img src="{{ url_for('static', filename='assets/back.svg') }}" alt="뒤로가기" class="back-icon">
+            </button>
+            <button class="close-button" id="closeImage">
+                <img src="{{ url_for('static', filename='assets/close.svg') }}" alt="닫기" class="close-icon">
+            </button>
+        </div>
+        <div class="image-container">
+            <h2 class="image-title">생성된 이야기의 이미지예요</h2>
+            <div class="content-wrapper">
+                <div class="image-content">
+                    <!-- 생성된 이미지가 이곳에 표시됩니다 -->
+                    <img id="storyImage" src="" alt="생성된 이미지">
+                </div>
+            </div>
+        </div>
+        <div class="bottom-buttons">
+            <button class="bottom-button secondary" id="regenerateImage">
+                <span class="bottom-button-text">이미지 재생성</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 세션 스토리지에서 이미지 URL 가져오기
+            const imageUrl = sessionStorage.getItem('generatedImage');
+            if (imageUrl) {
+                document.getElementById('storyImage').src = imageUrl;
+            } else {
+                alert('이미지를 불러오지 못했습니다. 다시 시도해주세요.');
+            }
+        });
+
+        // 뒤로가기 버튼 동작
+        document.getElementById('backFromImage').addEventListener('click', () => {
+            window.location.href = '/story_generate2';
+        });
+
+        // 닫기 버튼 동작
+        document.getElementById('closeImage').addEventListener('click', () => {
+            window.location.href = '/main';
+        });
+
+        document.getElementById('regenerateImage').addEventListener('click', () => {
+            window.location.href = '/loading_image2';
+        });
+    </script>
+</body>
+</html>
