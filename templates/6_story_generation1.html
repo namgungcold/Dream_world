@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이야기 생성 옵션</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='story_generation1.css') }}">
+</head>
+<body>
+    <div class="screen">
+        <button class="back-button" id="goBack">←</button>
+        <button class="close-button" id="closeToHome">×</button>
+        <h1 class="option-title">당신의 꿈을 멋진 이야기로 만들기 위해 아래 옵션을 선택해주세요</h1>
+        <div class="options-info">
+            <p class="info-title">이야기 수위조절 <span>?</span></p>
+            <p class="info-desc">공포, 폭력, 성인에 관한 내용은 인공지능 자체적으로 내용을 조정해야 콘텐츠 생성이 가능하여 강제 설정되어 있습니다.</p>
+        </div>
+        <div>
+            <h2 class="sub-title">이야기 장르를 선택해주세요</h2>
+            <div class="button-group" id="genreOptions">
+                <button class="option-btn" data-genre="동화">동화</button>
+                <button class="option-btn" data-genre="판타지">판타지</button>
+                <button class="option-btn" data-genre="로맨스">로맨스</button>
+                <button class="option-btn" data-genre="공포">공포</button>
+                <button class="option-btn" data-genre="스릴러">스릴러</button>
+                <button class="option-btn" data-genre="드라마">드라마</button>
+                <button class="option-btn" data-genre="코미디">코미디</button>
+                <button class="option-btn" data-genre="액션">액션</button>
+                <button class="option-btn" data-genre="모험">모험</button>
+                <button class="option-btn" data-genre="미스터리">미스터리</button>
+                <button class="option-btn" data-genre="범죄">범죄</button>
+                <button class="option-btn" data-genre="SF">SF</button>
+            </div>
+        </div>
+        <div>
+            <h2 class="sub-title">이야기 시점</h2>
+            <div class="button-group" id="viewpointOptions">
+                <button class="option-btn" data-viewpoint="1인칭">1인칭</button>
+                <button class="option-btn" data-viewpoint="3인칭">3인칭</button>
+                <button class="option-btn" data-viewpoint="전지적 작가 시점">전지적 작가 시점</button>
+            </div>
+        </div>
+        <div>
+            <h2 class="sub-title">이야기 톤</h2>
+            <div class="button-group" id="toneOptions">
+                <button class="option-btn" data-tone="반말">반말</button>
+                <button class="option-btn" data-tone="존대">존대</button>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <button class="nav-btn" id="dreamlist">
+                <span class="text">꿈 리스트</span>
+            </button>
+            <button class="nav-btn" id="generateStory">
+                <span class="text">이야기 생성</span>
+            </button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='story_generation1.js') }}"></script>
+    <script>
+        // 버튼 그룹 클릭 이벤트 핸들러
+        function addOptionSelectionHandlers(groupId, attribute) {
+            const buttons = document.querySelectorAll(`#${groupId} .option-btn`);
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // 모든 버튼에서 선택 해제
+                    buttons.forEach(btn => btn.classList.remove('selected'));
+                    // 현재 클릭된 버튼에 선택 클래스 추가
+                    button.classList.add('selected');
+                });
+            });
+        }
+
+        // 각 버튼 그룹에 대해 선택 이벤트 설정
+        addOptionSelectionHandlers('genreOptions', 'data-genre');
+        addOptionSelectionHandlers('viewpointOptions', 'data-viewpoint');
+        addOptionSelectionHandlers('toneOptions', 'data-tone');
+
+        // 이야기 생성 버튼 클릭 이벤트
+        document.getElementById('generateStory').addEventListener('click', () => {
+            const genre = document.querySelector('.option-btn[data-genre].selected')?.dataset.genre;
+            const viewpoint = document.querySelector('.option-btn[data-viewpoint].selected')?.dataset.viewpoint;
+            const tone = document.querySelector('.option-btn[data-tone].selected')?.dataset.tone;
+            const recognizedText = sessionStorage.getItem('recognizedText');
+
+            if (!genre || !viewpoint || !tone) {
+                alert('모든 옵션을 선택해주세요!');
+                return;
+            }
+
+            sessionStorage.setItem('selectedGenre', genre);
+            sessionStorage.setItem('selectedViewpoint', viewpoint);
+            sessionStorage.setItem('selectedTone', tone);            
+
+            window.location.href = "{{ url_for('loading_story2') }}";
+
+            // fetch('/generate-story2', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         updated_text: recognizedText,
+            //         genre,
+            //         viewpoint,
+            //         tone
+            //     })
+            // })
+            // .then(response => response.json())
+            // .then(data => {
+            //     if (data.story) {
+            //         sessionStorage.setItem('generatedStory', data.story);
+            //         window.location.href = '/story_generate2';
+            //     } else {
+            //         alert('이야기 생성에 실패했습니다.');
+            //     }
+            // })
+            // .catch(error => console.error('Error generating story:', error));
+        });
+    </script>
+</body>
+</html>
