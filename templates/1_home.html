@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홈화면</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_home.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- 홈 화면 -->
+        <div id="homeScreen" class="screen active">
+            <div class="welcome-text">
+                <div class="greeting">
+                    <span>안녕하세요</span>
+                    <!-- <span class="name">사용자님</span> -->
+                </div>
+                <p>좋은 꿈을 꾸셨나요?</p>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="bottom-nav">
+                    <!-- 꿈갤러리 버튼 수정 -->
+                    <a href="{{ url_for('dream_gallery') }}" class="nav-button">
+                        <img src="{{ url_for('static', filename='assets/gallery.svg') }}" alt="갤러리" class="icon">
+                        <span class="text">꿈갤러리</span>
+                    </a>
+                    
+                    <!-- 녹음 시작 버튼 -->
+                    <form action="{{ url_for('start_record') }}" method="POST">
+                        <button type="submit" class="start-button" id="startRecord">
+                            <img src="{{ url_for('static', filename='assets/mic.svg') }}" alt="시작" class="icon">
+                        </button>
+                    </form>
+
+                    <!-- 마이페이지 버튼 -->
+                    <button class="nav-button">
+                        <img src="{{ url_for('static', filename='assets/my.svg') }}" alt="마이페이지" class="icon">
+                        <span class="text">마이페이지</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
