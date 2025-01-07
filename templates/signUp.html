@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 5px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: normal;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input[type="text"], input[type="password"] {
+      padding: 10px 0;
+      font-size: 14px;
+      border: none;
+      border-bottom: 1px solid #ddd;
+      width: 100%;
+    }
+
+    input[type="text"]::placeholder, input[type="password"]::placeholder {
+      color: #838383;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      justify-content: space-between;
+    }
+
+    .checkbox-container input {
+      margin-right: 6px;
+    }
+
+    a {
+      font-size: 14px;
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .button {
+      width: 80%;
+      padding: 10px;
+      font-size: 14px;
+      background-color: #e0e0e0;
+      color: black;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    .button.active {
+      background-color: #007BFF;
+      color: white;
+    }
+
+    .button:hover {
+      background-color: #d6d6d6;
+    }
+
+    .warning {
+      color: red;
+      font-size: 12px;
+      text-align: center;
+      display: none;
+    }
+
+    .success-notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #4CAF50;
+      color: white;
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      display: none;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <h1>몽글몽글</h1>
+  <h2>회원가입</h2>
+  <form onsubmit="submitSignup(event)">
+    <input type="text" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <input type="password" id="confirm" placeholder="Confirm">
+
+    <div class="checkbox-container">
+      <label><input type="checkbox" id="agree1" onchange="checkCheckboxes()"> 이용약관 동의</label>
+      <a href="#">자세히보기</a>
+    </div>
+
+    <div class="checkbox-container">
+      <label><input type="checkbox" id="agree2" onchange="checkCheckboxes()"> 데이터 수집/활용 동의</label>
+      <a href="#">자세히보기</a>
+    </div>
+
+    <div class="checkbox-container">
+      <label><input type="checkbox" id="agree3" onchange="checkCheckboxes()"> 잠근 주의사항 동의</label>
+      <a href="#">자세히보기</a>
+    </div>
+
+    <button id="signupButton" class="button" type="submit">sign up</button>
+    <div id="warningMessage" class="warning">회원가입 완료를 위해 동의를 해주세요!</div>
+  </form>
+
+  <div id="successNotification" class="success-notification">
+    회원가입이 성공!
+  </div>
+
+  <script>
+    function checkCheckboxes() {
+      const agree1 = document.getElementById('agree1').checked;
+      const agree2 = document.getElementById('agree2').checked;
+      const agree3 = document.getElementById('agree3').checked;
+      const signupButton = document.getElementById('signupButton');
+
+      if (agree1 && agree2 && agree3) {
+        signupButton.classList.add('active');
+      } else {
+        signupButton.classList.remove('active');
+      }
+    }
+
+    function submitSignup(event) {
+      event.preventDefault(); // 기본 제출 동작 막기
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm').value;
+
+      if (!email || !password || !confirmPassword) {
+        alert('모든 필드를 입력해주세요.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+      }
+
+      const agree1 = document.getElementById('agree1').checked;
+      const agree2 = document.getElementById('agree2').checked;
+      const agree3 = document.getElementById('agree3').checked;
+
+      if (!(agree1 && agree2 && agree3)) {
+        document.getElementById('warningMessage').style.display = 'block';
+        return;
+      }
+
+      fetch('/save-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message) {
+            showNotification(() => {
+              window.location.href = '/';
+            });
+          } else if (data.error) {
+            alert(`오류: ${data.error}`);
+          }
+        })
+        .catch((error) => {
+          console.error('저장 오류:', error);
+        });
+    }
+
+    function showNotification(callback) {
+      const notification = document.getElementById('successNotification');
+      notification.style.display = 'block';
+      notification.style.opacity = 1;
+
+      setTimeout(() => {
+        notification.style.opacity = 0;
+        setTimeout(() => {
+          notification.style.display = 'none';
+          if (callback) callback();
+        }, 1000); // 1초 후 사라짐
+      }, 1000); // 2초 동안 표시
+    }
+  </script>
+</body>
+</html>
