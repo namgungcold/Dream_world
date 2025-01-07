@@ -73,8 +73,9 @@
     - API 호출 및 데이터 처리 중 발생할 수 있는 오류를 포착하여 JSON 형식으로 저장합니다.
     - 로그를 통해 서버 상태를 지속적으로 모니터링합니다.
 
----
+
 ### 화면구성
+---
 ![image](https://github.com/user-attachments/assets/d2d8b30b-f3cf-4213-85c2-f7dcbfba1eec)
 ![image](https://github.com/user-attachments/assets/2b5e8a1a-09f5-4eb3-be25-898f1bf4c162)
 
