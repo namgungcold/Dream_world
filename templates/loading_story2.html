@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로딩 화면</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
+</head>
+
+<body>
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-message">
+            <p>잠시만 기다려주세요.</p>
+            <div class="spinner"></div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='loading.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const recognizedText = sessionStorage.getItem('recognizedText');
+            const genre = sessionStorage.getItem('selectedGenre');
+            const viewpoint = sessionStorage.getItem('selectedViewpoint');
+            const tone = sessionStorage.getItem('selectedTone');
+
+            if (!genre || !viewpoint || !tone) {
+                alert('데이터가 없습니다.');
+                return;
+            }
+
+            // API 호출
+            fetch('/generate-story2', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    updated_text: recognizedText,
+                    genre,
+                    viewpoint,
+                    tone
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.story) {
+                        sessionStorage.setItem('generatedStory', data.story);
+                        window.location.href = '/story_generate2';
+                    } else {
+                        alert('이야기 생성에 실패했습니다.');
+                    }
+                })
+                .catch(error => console.error('Error generating story:', error));
+        });
+    </script>
+</body>
+
+</html>
