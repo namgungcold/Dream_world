@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dream_interpretation.css') }}">
+</head>
+
+<body>
+  <div id="dreamInterpretationScreen" class="screen">
+    <div class="list-header">
+      <button class="back-button" id="backFromInterpretation">
+        <img src="{{ url_for('static', filename='assets/back.svg') }}" alt="뒤로가기" class="back-icon" />
+      </button>
+      <button class="close-button" id="closeInterpretation">
+        <img src="{{ url_for('static', filename='assets/close.svg') }}" alt="닫기" class="close-icon" />
+      </button>
+    </div>
+
+    <div class="interpretation-container">
+      <h2 class="interpretation-title">
+        우선 꿈에 대해 간단하게 풀어드릴게요.
+      </h2>
+      <div class="content-wrapper">
+        <div class="interpretation-content">
+          <p id="dreamInterpretation"></p>
+        </div>
+
+        <div class="interpretation-footer">
+          <p class="footer-text">
+            네이트 판 꿈 해몽을 참고하여 작성되었습니다. 꿈의 해석에는
+            공통적인 개념이 없고, 의미는 매우 주관적일 수 있으니 재미로만
+            봐주세요.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-buttons">
+      <button class="bottom-button secondary">
+        <a href="#" id="generateImageButton" class="nav-button">
+          <span class="bottom-button-text">이미지 생성</span>
+        </a>
+      </button>
+
+      <button class="bottom-button primary">
+        <a href="{{ url_for('story_generate1') }}" class="nav-button">
+          <span class="bottom-button-text">이야기 생성</span>
+        </a>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 세션 스토리지에서 해석된 꿈 데이터를 가져옵니다.
+      const dreamInterpretation = sessionStorage.getItem('generatedStory');
+
+      // 세션에서 recognizedText 가져오기
+      const recognizedText = sessionStorage.getItem('recognizedText');
+
+      if (!recognizedText) {
+        alert('꿈의 내용을 불러올 수 없습니다. 이전 화면으로 돌아가 다시 시도해주세요.');
+        return;
+      }
+
+      // 꿈 해석 데이터를 표시
+      if (dreamInterpretation) {
+        document.getElementById('dreamInterpretation').innerText = dreamInterpretation;
+      } else {
+        // 꿈 해석 데이터가 없을 경우 메시지 표시
+        document.getElementById('dreamInterpretation').innerText =
+          '꿈의 내용을 불러오지 못했습니다. 이전 화면으로 돌아가 다시 시도해주세요.';
+      }
+
+      document.querySelector('.bottom-button.secondary a').addEventListener('click', function (event) {
+        event.preventDefault(); // 기본 동작 방지
+
+        window.location.href = "{{ url_for('loading_image1') }}";
+
+        // `/generate-image` API 호출
+        // fetch('/generate-image', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ prompt: recognizedText }),
+        // })
+        //   .then((response) => response.json())
+        //   .then((data) => {
+        //     if (data.image_url) {
+        //       sessionStorage.setItem('dreamImage', data.image_url); // 이미지 URL 저장
+        //       window.location.href = '/image_generate1'; // 이미지 생성 화면으로 이동
+        //     } else {
+        //       alert('이미지 생성에 실패했습니다. 다시 시도해주세요.');
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     console.error('이미지 생성 오류:', error);
+        //     alert('이미지 생성 중 오류가 발생했습니다.');
+        //   });
+      });
+
+    });
+
+    // 뒤로가기 버튼 이벤트
+    document.getElementById('backFromInterpretation').addEventListener('click', function () {
+      history.back(); // 이전 페이지로 이동
+    });
+
+    // 닫기 버튼 이벤트
+    document.getElementById('closeInterpretation').addEventListener('click', function () {
+      window.location.href = '/'; // 메인 페이지로 이동
+    });
+  </script>
+</body>
+
+</html>
