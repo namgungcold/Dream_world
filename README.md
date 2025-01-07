@@ -74,6 +74,10 @@
     - 로그를 통해 서버 상태를 지속적으로 모니터링합니다.
 
 ---
+### 화면구성
+![image](https://github.com/user-attachments/assets/d2d8b30b-f3cf-4213-85c2-f7dcbfba1eec)
+![image](https://github.com/user-attachments/assets/2b5e8a1a-09f5-4eb3-be25-898f1bf4c162)
+
 
 ## 프로젝트 구조
 
